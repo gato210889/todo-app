@@ -23,9 +23,8 @@ class TodoController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function index()
-    {
-        // TODO
-        $reminders=Todo::all();
+    {        
+        $reminders=Todo::orderBy('created_at')->get();
         return response($reminders, 200);
     }
 
@@ -39,7 +38,15 @@ class TodoController extends Controller
      */
     public function store(Request $request)
     {
-        // TODO
+        $reminder=new Todo($request->all());
+        if($reminder->save()){
+            return response($reminder, 200);
+        }else{
+            return response()->json([
+                'message' => 'create error'
+            ],400);
+        }
+        
     }
 
     /**
@@ -51,8 +58,17 @@ class TodoController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function update($id, Request $request)
-    {
-        // TODO
+    {   
+        $reminder = Todo::whereId($id);
+        if($reminder->update($request->all()))
+        {
+            return response(Todo::whereId($id)->first(), 200);
+        }else{
+            return response()->json([
+                'message' => 'update error'
+            ],400);
+        }
+        
     }
 
     /**
@@ -64,6 +80,16 @@ class TodoController extends Controller
      */
     public function delete($id)
     {
-        // TODO
+        if(Todo::whereId($id)->delete())
+        {
+            return response()->json([
+                'message' => 'delete success'
+            ],200);
+        }else{
+            return response()->json([
+                'message' => 'delete error'
+            ],400);
+        }
+        
     }
 }
