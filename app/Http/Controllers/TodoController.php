@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Todo;
+use Illuminate\Http\Response;
 
 /**
  * En esta clase deben implementar los metodos vacios de acuerdo a lo
@@ -23,6 +25,8 @@ class TodoController extends Controller
     public function index()
     {
         // TODO
+        $reminders=Todo::all();
+        return response($reminders, 200);
     }
 
     /**
