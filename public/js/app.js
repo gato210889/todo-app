@@ -29798,23 +29798,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         addTodo: function addTodo() {
+            var _this2 = this;
+
             var text = this.todoItemText.trim();
             if (text !== '') {
-                this.items.push({ text: text, done: false });
-                this.todoItemText = '';
+                axios.post('http://127.0.0.1:8000/api/todos', { text: text, done: false }).then(function (res) {
+                    _this2.items.push(res.data);
+                    _this2.todoItemText = '';
+                });
             }
         },
         removeTodo: function removeTodo(todo) {
-            var _this2 = this;
+            var _this3 = this;
 
             axios.delete('http://127.0.0.1:8000/api/todos/' + todo.id).then(function (response) {
-                _this2.items = _this2.items.filter(function (item) {
+                _this3.items = _this3.items.filter(function (item) {
                     return item !== todo;
                 });
             });
         },
         toggleDone: function toggleDone(todo) {
             todo.done = !todo.done;
+            axios.put('http://127.0.0.1:8000/api/todos/' + todo.id, todo).then(function (res) {
+                console.log(res.data);
+                todo = res.data;
+            });
         }
     }
 });

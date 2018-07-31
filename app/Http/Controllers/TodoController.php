@@ -64,9 +64,7 @@ class TodoController extends Controller
         {
             return response(Todo::whereId($id)->first(), 200);
         }else{
-            return response()->json([
-                'message' => 'update error'
-            ],400);
+            return response(Todo::whereId($id)->first(), 400);
         }
         
     }

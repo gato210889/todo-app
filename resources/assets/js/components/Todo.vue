@@ -49,9 +49,13 @@
         methods: {
             addTodo () {
                 let text = this.todoItemText.trim()
-                if (text !== '') {
-                    this.items.push({ text: text, done: false })
-                    this.todoItemText = ''
+                if (text !== '') {                    
+                    axios.post(`http://127.0.0.1:8000/api/todos`, { text: text, done: false })
+                    .then(res => {
+                        this.items.push(res.data)
+                        this.todoItemText = ''
+                    });
+                    
                 }
             },
             removeTodo (todo) {
@@ -62,6 +66,12 @@
             },
             toggleDone (todo) {
                 todo.done = !todo.done
+                axios.put(`http://127.0.0.1:8000/api/todos/`+todo.id, todo)
+                .then(res => {
+                    console.log(res.data)
+                    todo=res.data
+                });
+                
             }
         }
     }
