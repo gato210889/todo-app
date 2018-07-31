@@ -29792,7 +29792,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var _this = this;
 
         axios.get('http://127.0.0.1:8000/api/todos').then(function (response) {
-            // JSON responses are automatically parsed.
             _this.items = response.data;
         });
     },
@@ -29806,8 +29805,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
         },
         removeTodo: function removeTodo(todo) {
-            this.items = this.items.filter(function (item) {
-                return item !== todo;
+            var _this2 = this;
+
+            axios.delete('http://127.0.0.1:8000/api/todos/' + todo.id).then(function (response) {
+                _this2.items = _this2.items.filter(function (item) {
+                    return item !== todo;
+                });
             });
         },
         toggleDone: function toggleDone(todo) {

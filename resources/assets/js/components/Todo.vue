@@ -43,7 +43,6 @@
         mounted () {
             axios.get(`http://127.0.0.1:8000/api/todos`)
             .then(response => {
-                // JSON responses are automatically parsed.
                 this.items = response.data
             })            
         },
@@ -56,7 +55,10 @@
                 }
             },
             removeTodo (todo) {
-                this.items = this.items.filter(item => item !== todo)
+                axios.delete(`http://127.0.0.1:8000/api/todos/`+todo.id)
+                .then(response => {
+                    this.items = this.items.filter(item => item !== todo)
+                })
             },
             toggleDone (todo) {
                 todo.done = !todo.done
