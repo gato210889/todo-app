@@ -892,7 +892,7 @@ __webpack_require__(11);
 window.Vue = __webpack_require__(34);
 
 
-console.log(__WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */]);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -29753,6 +29753,7 @@ module.exports = function listToStyles (parentId, list) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(54);
 //
 //
 //
@@ -29776,51 +29777,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * - En addTodo, removeTodo y toggleTodo deben hacer los cambios pertinentes para que las modificaciones,
  *   addiciones o elimicaiones tomen efecto en el backend asi como la base de datos.
  */
-/* harmony default export */ __webpack_exports__["default"] = ({
-    data: function data() {
-        return {
-            todoItemText: '',
-            items: []
-        };
-    },
-    mounted: function mounted() {
-        var _this = this;
 
-        axios.get('http://127.0.0.1:8000/api/todos').then(function (response) {
-            _this.items = response.data;
-        });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapState */])(['items']),
+    mounted: function mounted() {
+        this.$store.dispatch('loadTodos');
     },
 
     methods: {
-        addTodo: function addTodo(todoItemText) {
-            var _this2 = this;
-
-            var text = todoItemText.trim();
-            if (text !== '') {
-                axios.post('http://127.0.0.1:8000/api/todos', { text: text, done: false }).then(function (response) {
-                    _this2.items.push(response.data);
-                    _this2.todoItemText = '';
-                });
+        addTodo: function addTodo(todo) {
+            todo.text = todo.text.trim();
+            if (todo.text !== '') {
+                this.$store.dispatch('addTodo', { todo: todo });
             }
         },
         removeTodo: function removeTodo(todo) {
-            var _this3 = this;
-
-            axios.delete('http://127.0.0.1:8000/api/todos/' + todo.id).then(function (response) {
-                _this3.items = _this3.items.filter(function (item) {
-                    return item.id !== todo.id;
-                });
-            });
+            this.$store.dispatch('removeTodo', { todo: todo });
         },
         toggleDone: function toggleDone(todo) {
-            var _this4 = this;
-
-            todo.done = !todo.done;
-            axios.put('http://127.0.0.1:8000/api/todos/' + todo.id, todo).then(function (response) {
-                _this4.items.filter(function (item) {
-                    return item.id === todo.id;
-                })[0].done = todo.done;
-            });
+            this.$store.dispatch('toggleDone', { todo: todo });
         }
     },
     components: {
@@ -29906,7 +29882,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         addTodo: function addTodo() {
-            this.$emit('addTodo', this.todoItemText);
+            this.$emit('addTodo', { text: this.todoItemText, done: false });
             this.todoItemText = '';
         }
     }
@@ -30161,11 +30137,65 @@ if (false) {
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
 var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
-  state: {},
-  actions: {},
-  mutations: {},
-  getters: {},
-  modules: {}
+    state: {
+        items: []
+    },
+    actions: {
+        loadTodos: function loadTodos(_ref) {
+            var commit = _ref.commit;
+
+            axios.get('/api/todos').then(function (response) {
+                return response.data;
+            }).then(function (todos) {
+                commit('SET_TODOS', todos);
+            });
+        },
+        addTodo: function addTodo(_ref2, _ref3) {
+            var commit = _ref2.commit;
+            var todo = _ref3.todo;
+
+            axios.post('/api/todos', todo).then(function (response) {
+                commit('ADD_TODO', response.data);
+            });
+        },
+        removeTodo: function removeTodo(_ref4, _ref5) {
+            var commit = _ref4.commit;
+            var todo = _ref5.todo;
+
+            axios.delete('/api/todos/' + todo.id).then(function (response) {
+                commit('REMOVE_TODO', todo);
+            });
+        },
+        toggleDone: function toggleDone(_ref6, _ref7) {
+            var commit = _ref6.commit;
+            var todo = _ref7.todo;
+
+            todo.done = !todo.done;
+            axios.put('/api/todos/' + todo.id, todo).then(function (response) {
+                commit('DONE_TODO', response.data);
+            });
+        }
+    },
+    mutations: {
+        SET_TODOS: function SET_TODOS(state, todos) {
+            state.items = todos;
+        },
+        ADD_TODO: function ADD_TODO(state, todo) {
+            state.items.push(todo);
+        },
+        REMOVE_TODO: function REMOVE_TODO(state, todo) {
+            state.items = state.items.filter(function (item) {
+                return item.id !== todo.id;
+            });
+        },
+        DONE_TODO: function DONE_TODO(state, todo) {
+            state.items.filter(function (item) {
+                return item.id === todo.id;
+            })[0].done = todo.done;
+        }
+    },
+    getters: {},
+    modules: {}
 });
 
 /* harmony default export */ __webpack_exports__["a"] = (store);
@@ -30177,7 +30207,7 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 "use strict";
 /* unused harmony export Store */
 /* unused harmony export install */
-/* unused harmony export mapState */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapState; });
 /* unused harmony export mapMutations */
 /* unused harmony export mapGetters */
 /* unused harmony export mapActions */

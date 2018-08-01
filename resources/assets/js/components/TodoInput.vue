@@ -22,7 +22,7 @@
         },
         methods: {
             addTodo () {
-                this.$emit('addTodo',this.todoItemText);
+                this.$emit('addTodo',{ text: this.todoItemText, done: false });
                 this.todoItemText = ''
             }
         }

@@ -21,42 +21,27 @@
      * - En addTodo, removeTodo y toggleTodo deben hacer los cambios pertinentes para que las modificaciones,
      *   addiciones o elimicaiones tomen efecto en el backend asi como la base de datos.
      */
-    export default {        
-        data () {
-            return {
-                todoItemText: '',
-                items: [],
-            }
-        },
+    import { mapState } from 'vuex';
+
+    export default {   
+        computed: mapState([
+            'items'
+        ]),  
         mounted () {
-            axios.get(`http://127.0.0.1:8000/api/todos`)
-            .then(response => {
-                this.items = response.data
-            })            
+            this.$store.dispatch('loadTodos')            
         },
         methods: {          
-            addTodo (todoItemText) { 
-                let text = todoItemText.trim()                 
-                if (text !== '') {                     
-                    axios.post(`http://127.0.0.1:8000/api/todos`, { text: text, done: false }) 
-                    .then(response => { 
-                        this.items.push(response.data) 
-                        this.todoItemText = '' 
-                    });                     
+            addTodo (todo) { 
+                todo.text = todo.text.trim()                 
+                if (todo.text !== '') { 
+                    this.$store.dispatch('addTodo', {todo})                    
                 } 
             },   
             removeTodo (todo) {
-                axios.delete(`http://127.0.0.1:8000/api/todos/`+todo.id)
-                .then(response => {
-                    this.items = this.items.filter(item => item.id !== todo.id)
-                })
+                this.$store.dispatch('removeTodo', {todo})
             },
             toggleDone (todo) {
-                todo.done=!todo.done
-                axios.put(`http://127.0.0.1:8000/api/todos/`+todo.id, todo)
-                .then(response => {
-                    this.items.filter(item => item.id === todo.id)[0].done = todo.done;
-                });                
+                this.$store.dispatch('toggleDone', {todo})             
             }
         },
         components: {
