@@ -29763,10 +29763,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /**
  * Tips:
@@ -29796,8 +29792,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             var text = todoItemText.trim();
             if (text !== '') {
-                axios.post('http://127.0.0.1:8000/api/todos', { text: text, done: false }).then(function (res) {
-                    _this2.items.push(res.data);
+                axios.post('http://127.0.0.1:8000/api/todos', { text: text, done: false }).then(function (response) {
+                    _this2.items.push(response.data);
                     _this2.todoItemText = '';
                 });
             }
@@ -29807,19 +29803,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             axios.delete('http://127.0.0.1:8000/api/todos/' + todo.id).then(function (response) {
                 _this3.items = _this3.items.filter(function (item) {
-                    return item !== todo;
+                    return item.id !== todo.id;
                 });
             });
         },
         toggleDone: function toggleDone(todo) {
+            var _this4 = this;
+
             todo.done = !todo.done;
-            axios.put('http://127.0.0.1:8000/api/todos/' + todo.id, todo).then(function (res) {
-                todo = res.data;
+            axios.put('http://127.0.0.1:8000/api/todos/' + todo.id, todo).then(function (response) {
+                _this4.items.filter(function (item) {
+                    return item.id === todo.id;
+                })[0].done = todo.done;
             });
         }
     },
     components: {
-        'todo-input-component': __webpack_require__(42)
+        'todo-input-component': __webpack_require__(42),
+        'todo-item-component': __webpack_require__(50)
     }
 });
 
@@ -29977,42 +29978,19 @@ var render = function() {
       _c(
         "table",
         { staticClass: "table is-bordered" },
-        _vm._l(_vm.items, function(todo, index) {
-          return _c("tr", { key: index }, [
-            _c(
-              "td",
+        _vm._l(_vm.items, function(todo) {
+          return _c(
+            "todo-item-component",
+            _vm._b(
               {
-                staticClass: "is-fullwidth",
-                class: { "is-done": todo.done },
-                staticStyle: { cursor: "pointer" },
-                on: {
-                  click: function($event) {
-                    _vm.toggleDone(todo)
-                  }
-                }
+                key: todo.id,
+                on: { toggleDone: _vm.toggleDone, removeTodo: _vm.removeTodo }
               },
-              [
-                _vm._v(
-                  "\n                " + _vm._s(todo.text) + "\n            "
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c("td", { staticClass: "is-narrow" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "button is-danger is-small",
-                  on: {
-                    click: function($event) {
-                      _vm.removeTodo(todo)
-                    }
-                  }
-                },
-                [_vm._v("Eliminar")]
-              )
-            ])
-          ])
+              "todo-item-component",
+              todo,
+              false
+            )
+          )
         })
       )
     ],
@@ -30034,6 +30012,135 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(8)
+/* script */
+var __vue_script__ = __webpack_require__(51)
+/* template */
+var __vue_template__ = __webpack_require__(52)
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\js\\components\\TodoItemReminder.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] TodoItemReminder.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-020e4340", Component.options)
+  } else {
+    hotAPI.reload("data-v-020e4340", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    methods: {
+        toggleDone: function toggleDone(todo) {
+            this.$emit('toggleDone', todo);
+        },
+        removeTodo: function removeTodo(todo) {
+            this.$emit('removeTodo', todo);
+        }
+    },
+    props: ['id', 'text', 'done']
+});
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("tr", [
+    _c(
+      "td",
+      {
+        staticClass: "is-fullwidth",
+        class: { "is-done": _vm.done },
+        staticStyle: { cursor: "pointer" },
+        on: {
+          click: function($event) {
+            _vm.toggleDone({ id: _vm.id, text: _vm.text, done: _vm.done })
+          }
+        }
+      },
+      [_vm._v("\n        " + _vm._s(_vm.text) + "\n    ")]
+    ),
+    _vm._v(" "),
+    _c("td", { staticClass: "is-narrow" }, [
+      _c(
+        "a",
+        {
+          staticClass: "button is-danger is-small",
+          on: {
+            click: function($event) {
+              _vm.removeTodo({ id: _vm.id, text: _vm.text, done: _vm.done })
+            }
+          }
+        },
+        [_vm._v("Eliminar")]
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-020e4340", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);
