@@ -1,17 +1,9 @@
 <template>
     <div class="container">
-        <div class="box">
-            <div class="field is-grouped">
-                <p class="control is-expanded">
-                    <input class="input" type="text" placeholder="Nuevo recordatorio" v-model="todoItemText">
-                </p>
-                <p class="control">
-                    <a class="button is-info" @click="addTodo">
-                        Agregar
-                    </a>
-                </p>
-            </div>
-        </div>
+        <todo-input-component
+            @click="addTodo"
+            @addTodo="addTodo"
+        ></todo-input-component>
         <table class="table is-bordered">
             <tr v-for="(todo, index) in items" :key="index">
                 <td class="is-fullwidth" style="cursor: pointer" :class="{ 'is-done': todo.done }" @click="toggleDone(todo)">
@@ -33,7 +25,7 @@
      * - En addTodo, removeTodo y toggleTodo deben hacer los cambios pertinentes para que las modificaciones,
      *   addiciones o elimicaiones tomen efecto en el backend asi como la base de datos.
      */
-    export default {
+    export default {        
         data () {
             return {
                 todoItemText: '',
@@ -46,18 +38,17 @@
                 this.items = response.data
             })            
         },
-        methods: {
-            addTodo () {
-                let text = this.todoItemText.trim()
-                if (text !== '') {                    
-                    axios.post(`http://127.0.0.1:8000/api/todos`, { text: text, done: false })
-                    .then(res => {
-                        this.items.push(res.data)
-                        this.todoItemText = ''
-                    });
-                    
-                }
-            },
+        methods: {          
+            addTodo (todoItemText) { 
+                let text = todoItemText.trim()                 
+                if (text !== '') {                     
+                    axios.post(`http://127.0.0.1:8000/api/todos`, { text: text, done: false }) 
+                    .then(res => { 
+                        this.items.push(res.data) 
+                        this.todoItemText = '' 
+                    });                     
+                } 
+            },   
             removeTodo (todo) {
                 axios.delete(`http://127.0.0.1:8000/api/todos/`+todo.id)
                 .then(response => {
@@ -68,11 +59,13 @@
                 todo.done = !todo.done
                 axios.put(`http://127.0.0.1:8000/api/todos/`+todo.id, todo)
                 .then(res => {
-                    console.log(res.data)
                     todo=res.data
                 });
                 
             }
+        },
+        components: {
+            'todo-input-component': require('./TodoInput.vue')
         }
     }
 </script>
